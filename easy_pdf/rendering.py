@@ -119,7 +119,7 @@ def make_response(content, filename=None, content_type="application/pdf"):
     return response
 
 
-def render_to_pdf(template, context, encoding="utf-8", **kwargs):
+def render_to_pdf(template, context, request=None, encoding="utf-8", **kwargs):
     """
     Create PDF document from Django html template.
 
@@ -133,7 +133,7 @@ def render_to_pdf(template, context, encoding="utf-8", **kwargs):
     :raises: :exc:`~easy_pdf.exceptions.PDFRenderingError`, :exc:`~easy_pdf.exceptions.UnsupportedMediaPathException`
     """
 
-    content = loader.render_to_string(template, context)
+    content = loader.render_to_string(template, context, request=request)
     return html_to_pdf(content, encoding, **kwargs)
 
 
@@ -153,9 +153,8 @@ def render_to_pdf_response(request, template, context, filename=None,
     :type context: :class:`dict` or :class:`django.template.Context`
     :rtype: :class:`django.http.HttpResponse`
     """
-
     try:
-        pdf = render_to_pdf(template, context, encoding=encoding, **kwargs)
+        pdf = render_to_pdf(template, context, request=request, encoding=encoding, **kwargs)
         return make_response(pdf, filename)
     except PDFRenderingError as e:
         logger.exception(e.message)
