@@ -6,7 +6,7 @@ import logging
 import os
 
 from django.conf import settings
-from django.template import loader, Context, RequestContext
+from django.template import loader
 from django.http import HttpResponse
 from django.utils.http import urlquote
 from django.utils.six import BytesIO
@@ -132,8 +132,6 @@ def render_to_pdf(template, context, encoding="utf-8", **kwargs):
 
     :raises: :exc:`~easy_pdf.exceptions.PDFRenderingError`, :exc:`~easy_pdf.exceptions.UnsupportedMediaPathException`
     """
-    if not isinstance(context, Context):
-        context = Context(context)
 
     content = loader.render_to_string(template, context)
     return html_to_pdf(content, encoding, **kwargs)
@@ -155,12 +153,6 @@ def render_to_pdf_response(request, template, context, filename=None,
     :type context: :class:`dict` or :class:`django.template.Context`
     :rtype: :class:`django.http.HttpResponse`
     """
-
-    if not isinstance(context, Context):
-        if request is not None:
-            context = RequestContext(request, context)
-        else:
-            context = Context(context)
 
     try:
         pdf = render_to_pdf(template, context, encoding=encoding, **kwargs)
